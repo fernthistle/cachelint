@@ -1,0 +1,18 @@
+[project]
+name = "cachelint"
+version = "0.1.0"
+description = "A validating parser and pretty printer for HTTP cache headers"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "fernthistle"}]
+
+[project.scripts]
+cachelint = "cachelint.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["cachelint*"]
