@@ -107,11 +107,49 @@ so it composes with `curl -sI` and similar:
 $ curl -sI https://example.com | grep -i ^cache-control: | cut -d' ' -f2- | python -m cachelint.cli --json
 ```
 
+### Expires and Age
+
+`Expires` is an HTTP-date; `Age` is a delta-seconds integer. Both are handled
+by the same library and CLI, selected with `--header`:
+
+```python
+from cachelint import parse_expires, format_expires
+
+result = parse_expires("Sun, 06 Nov 1994 08:49:37 GMT")
+print(format_expires(result))
+```
+
+```
+Expires: 'Sun, 06 Nov 1994 08:49:37 GMT'
+  parsed: 1994-11-06T08:49:37+00:00
+  expired: True
+```
+
+Per RFC 9111 5.3, a date that doesn't parse - including the legacy value
+`"0"` - is treated as already expired rather than as an error:
+
+```console
+$ python -m cachelint.cli --header expires "not a date"
+Expires: 'not a date'
+  expired: True
+  warning: 'not a date' is not a valid HTTP-date; treating as already expired per RFC 9111 5.3
+```
+
+`Age` follows the same delta-seconds rules as `max-age`, including the
+2**31-1 clamp from RFC 9111 1.2.2 for values a sender failed to bound:
+
+```console
+$ python -m cachelint.cli --header age 120
+Age: '120'
+  seconds: 120
+```
+
 ## Scope right now
 
-Only `Cache-Control` is handled so far. `Expires`, `Vary`, `Age`, and `ETag`
-have their own parsing and validation quirks and are planned but not
-implemented yet.
+`Cache-Control`, `Expires`, and `Age` are handled. `Vary` and `ETag` have
+their own parsing and validation quirks and are planned but not implemented
+yet, and nothing yet combines multiple headers from the same message into
+one report.
 
 ## License
 
