@@ -144,12 +144,35 @@ Age: '120'
   seconds: 120
 ```
 
+### Vary and ETag
+
+`Vary` is a comma-separated list of field-names, or the single value `*`,
+which can't be combined with anything else - it means the cache key can't be
+expressed as a set of field-names at all, so any other entry alongside it is
+redundant:
+
+```console
+$ python -m cachelint.cli --header vary "Accept-Encoding, accept-encoding"
+Vary: 'Accept-Encoding, accept-encoding'
+  field-names: Accept-Encoding, accept-encoding
+  warning: field-name 'accept-encoding' repeated
+```
+
+`ETag` is an optional `W/` weakness indicator followed by a quoted opaque
+tag. Unlike a quoted-string, entity-tags have no escaping mechanism, so a
+backslash inside the quotes is just a literal character:
+
+```console
+$ python -m cachelint.cli --header etag 'W/"abc123"'
+ETag: 'W/"abc123"'
+  weak: True
+  opaque-tag: 'abc123'
+```
+
 ## Scope right now
 
-`Cache-Control`, `Expires`, and `Age` are handled. `Vary` and `ETag` have
-their own parsing and validation quirks and are planned but not implemented
-yet, and nothing yet combines multiple headers from the same message into
-one report.
+`Cache-Control`, `Expires`, `Age`, `Vary`, and `ETag` are handled. Nothing yet
+combines multiple headers from the same message into one report.
 
 ## License
 

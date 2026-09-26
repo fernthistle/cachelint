@@ -7,7 +7,9 @@ import json
 import sys
 
 from .dates import age_to_dict, expires_to_dict, format_age, format_expires, parse_age, parse_expires
+from .etag import etag_to_dict, format_etag, parse_etag
 from .parser import format_result, parse_cache_control, to_dict
+from .vary import format_vary, parse_vary, vary_to_dict
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,7 +24,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--header",
-        choices=("cache-control", "expires", "age"),
+        choices=("cache-control", "expires", "age", "vary", "etag"),
         default="cache-control",
         help="which header the value came from (default: cache-control)",
     )
@@ -56,9 +58,15 @@ def main(argv=None) -> int:
     elif args.header == "expires":
         result = parse_expires(value)
         print(json.dumps(expires_to_dict(result), indent=2) if args.json else format_expires(result))
-    else:
+    elif args.header == "age":
         result = parse_age(value)
         print(json.dumps(age_to_dict(result), indent=2) if args.json else format_age(result))
+    elif args.header == "vary":
+        result = parse_vary(value)
+        print(json.dumps(vary_to_dict(result), indent=2) if args.json else format_vary(result))
+    else:
+        result = parse_etag(value)
+        print(json.dumps(etag_to_dict(result), indent=2) if args.json else format_etag(result))
 
     return 1 if result.errors() else 0
 

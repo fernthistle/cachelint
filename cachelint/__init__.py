@@ -10,7 +10,9 @@ from .dates import (
     parse_age,
     parse_expires,
 )
+from .etag import ETagResult, etag_to_dict, format_etag, parse_etag
 from .parser import Directive, Issue, ParseResult, format_result, parse_cache_control, to_dict
+from .vary import VaryResult, format_vary, parse_vary, vary_to_dict
 
 __all__ = [
     "parse_cache_control",
@@ -27,6 +29,14 @@ __all__ = [
     "format_age",
     "age_to_dict",
     "AgeResult",
+    "parse_vary",
+    "format_vary",
+    "vary_to_dict",
+    "VaryResult",
+    "parse_etag",
+    "format_etag",
+    "etag_to_dict",
+    "ETagResult",
 ]
 
 __version__ = "0.1.0"
